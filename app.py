@@ -157,6 +157,22 @@ st.markdown("""
 
 # Sidebar
 with st.sidebar:
+    st.header("🔑 Authentication")
+    api_key_input = st.text_input(
+        "OpenAI API Key",
+        value=os.getenv("OPENAI_API_KEY", ""),
+        type="password",
+        placeholder="sk-...",
+        help="Provide your OpenAI API Key (or configure OPENAI_API_KEY in a .env file)"
+    )
+    if api_key_input:
+        if not st.session_state.rag.model or getattr(st.session_state, "_current_api_key", None) != api_key_input:
+            st.session_state.rag.set_api_key(api_key_input)
+            st.session_state._current_api_key = api_key_input
+            os.environ["OPENAI_API_KEY"] = api_key_input
+            st.success("API key configured!")
+    
+    st.divider()
     st.header("📂 Ingest Documents")
     uploaded_file = st.file_uploader("Upload PDF document", type="pdf", help="Select any text-based PDF to index into the vector store")
     
